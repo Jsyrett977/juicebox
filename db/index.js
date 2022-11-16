@@ -28,6 +28,7 @@ const createUser = async ({ username, password, name, location}) => {
         `, [username, password, name, location]);
         return rows;
     } catch(error){
+        console.log("error is in create user")
         console.error(error)
     }
 }
@@ -41,6 +42,7 @@ const createPost = async ({authorId, title, content, tags = []}) => {
         const tagList = await createTags(tags);
         return await addTagsToPost(post.id, tagList);
     } catch(error){
+        console.log("error is in create post")
         throw error
     }
 }
@@ -82,7 +84,7 @@ const updatePost = async (postId, fields = {}) => {
             RETURNING *;
         `, Object.values(fields));
         }
-        
+
         if(tags === undefined){
             return await getPostById(postId)
         }
@@ -145,6 +147,7 @@ async function createTags(tagList) {
         const result = await client.query(`
         INSERT INTO tags(name)
         VALUES (${insertValues})
+        ON CONFLICT (name) DO NOTHING;
         `, tagList)
         const {rows } = await client.query(`
         SELECT * FROM tags

@@ -52,22 +52,23 @@ async function dropTables() {
         title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
         active BOOLEAN DEFAULT true
-      )
+      );
       `);
     await client.query(`
     CREATE TABLE tags(
         id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL
-    )
+        name VARCHAR(255) NOT NULL UNIQUE
+    );
     `)
     await client.query(`
     CREATE TABLE post_tags(
         "postId" INTEGER REFERENCES posts(id),
         "tagId" INTEGER REFERENCES tags(id),
         UNIQUE("postId", "tagId")
-    )
+    );
     `)
   
+
       console.log("Finished building tables!");
     } catch (error) {
       console.error("Error building tables!");
@@ -86,13 +87,14 @@ async function dropTables() {
     }
   }
 const createInitialPosts = async () => {
-    try{
+        try{
         const [albert, sandra, glamgal] = await getAllUsers();
 
         await createPost({authorId: albert.id, title: 'First Post', content: 'the content', tags: ["#happy", "#youcandoanything"]})
         await createPost({authorId: glamgal.id, title: 'Second Post', content: 'the content x 2', tags: ["#happy", "#youcandoanything", "#canmandoeverything"]})
         await createPost({authorId: sandra.id, title: 'Third Post', content: 'the content x 3', tags: ["#happy", "#worst-day-ever"]})
     } catch(error) {
+        console.log("error is in create init post")
         throw error;
     }
 }
