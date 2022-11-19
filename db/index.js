@@ -18,6 +18,23 @@ const getAllPosts = async () => {
         throw error
     }
 }
+const getAllTags = async () => {
+    const { rows } = await client.query(`
+    
+    `)
+}
+const getUserByUsername = async (username) => {
+    try{
+        const { rows: [user] } = await client.query(`
+            SELECT *
+            FROM users
+            WHERE username=$1;
+        `, [username])
+        return user
+    }catch(error){
+        throw(error)
+    }
+}
 const createUser = async ({ username, password, name, location}) => {
     try {
         const { rows } = await client.query(`
@@ -246,5 +263,6 @@ module.exports = {
     createPostTag,
     addTagsToPost,
     getPostById,
-    getPostsByTagName
+    getPostsByTagName,
+    getUserByUsername
 }
