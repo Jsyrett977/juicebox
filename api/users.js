@@ -1,7 +1,8 @@
 const express = require('express');
 const usersRouter = express.Router();
-const { getAllUsers, getUserByUsername, createUser, getUserById } = require('../db');
+const { getAllUsers, getUserByUsername, createUser, getUserById, updateUser } = require('../db');
 const jwt = require('jsonwebtoken');
+const {requireUser} = require('./utils')
 
 usersRouter.use((req, res, next) => {
     console.log('request to /users')
@@ -76,4 +77,24 @@ usersRouter.post('/register', async(req, res, next) => {
         next({name, message})
     }
 } )
+
+usersRouter.delete('/:userId', requireUser, async (req, res, next) =>{
+    const userId = req.params.userId
+    const user = await getUserById(userId)
+    try{
+        if(user.id === req.user.id){
+            const updatedUser = await updateUser(user.id, {active: false})
+            res.send({
+                updatedUser
+            })
+        }else{
+            next({
+                name: "CouldNotDelete",
+                message: "No Changes made"
+            })
+        }
+    } catch({name, message}){
+        next({name, message})
+    }
+})
 module.exports = usersRouter;
