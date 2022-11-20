@@ -19,9 +19,15 @@ const getAllPosts = async () => {
     }
 }
 const getAllTags = async () => {
+    try{
     const { rows } = await client.query(`
-    
+    SELECT *
+    FROM tags;
     `)
+    return rows;
+    }catch(error){
+        throw error;
+    }
 }
 const getUserByUsername = async (username) => {
     try{
@@ -207,7 +213,13 @@ async function addTagsToPost(postId, tagList) {
         FROM posts
         WHERE id=$1;
       `, [postId]);
-  
+        if(!post){
+            throw{
+                name: "postnotfound",
+                message: "Could not find a post with that ID"
+            };
+        }
+        
       const { rows: tags } = await client.query(`
         SELECT tags.*
         FROM tags
@@ -264,5 +276,6 @@ module.exports = {
     addTagsToPost,
     getPostById,
     getPostsByTagName,
-    getUserByUsername
+    getUserByUsername,
+    getAllTags
 }
